@@ -1,0 +1,24 @@
+#include "../util/Coordenada.h"
+enum class TipoCelula
+{
+    Agua,
+    Erro,
+    Acerto,
+    Navio
+};
+
+class Tabuleiro{
+private:
+    static const int TAMANHO = 13;
+
+    TipoCelula celulas[TAMANHO][TAMANHO];
+
+public:
+    Tabuleiro();
+
+    bool coordenadaValida(const Coordenada& coordenada) const;
+
+    TipoCelula getCelula(const Coordenada& coordenada) const;
+
+    void exibir() const;
+};
