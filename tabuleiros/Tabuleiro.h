@@ -1,3 +1,6 @@
+#ifndef TABULEIRO_H
+#define TABULEIRO_H
+
 #include "../util/Coordenada.h"
 enum class TipoCelula
 {
@@ -8,7 +11,7 @@ enum class TipoCelula
 };
 
 class Tabuleiro{
-private:
+protected:
     static const int TAMANHO = 13;
 
     TipoCelula celulas[TAMANHO][TAMANHO];
@@ -22,3 +25,5 @@ public:
 
     void exibir() const;
 };
+
+#endif

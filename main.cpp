@@ -6,6 +6,8 @@
 #include "navios/Destroyer.h"
 #include "navios/Submarino.h"
 #include "tabuleiros/Tabuleiro.h"
+#include "tabuleiros/TabuleiroFrota.h"
+#include "tabuleiros/TabuleiroRadar.h"
 #include <vector>
 
 int main()
@@ -16,9 +18,22 @@ int main()
     Destroyer destroyer;
     Submarino submarino;
 
-    Tabuleiro tabuleiro;
+    Tabuleiro tabuleiro; 
+    TabuleiroFrota frota;
 
-    tabuleiro.exibir();
+    Coordenada inicio{3, 3};
+
+    bool conseguiu = frota.posicionarNavio(inicio, 3, true);
+
+    std::cout << conseguiu << std::endl;
+
+    inicio = {3, 12};
+
+    conseguiu = frota.posicionarNavio(inicio, 3, true);
+
+    std::cout << conseguiu << std::endl;
+
+    frota.exibir();
     
     // std::vector<Navio*> frota;
     
