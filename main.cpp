@@ -8,6 +8,7 @@
 #include "tabuleiros/Tabuleiro.h"
 #include "tabuleiros/TabuleiroFrota.h"
 #include "tabuleiros/TabuleiroRadar.h"
+#include "jogadores/Jogador.h"
 #include <vector>
 
 int main()
@@ -22,6 +23,13 @@ int main()
     TabuleiroFrota frota;
 
     Coordenada inicio{3, 3};
+
+    Jogador jogador1("fabio");
+    Jogador jogador2("Giovana");
+
+    std::cout << jogador1.getNome() << std::endl;
+    std::cout << jogador2.getNome() << std::endl;
+
 
     bool conseguiu = frota.posicionarNavio(inicio, 3, true);
 
