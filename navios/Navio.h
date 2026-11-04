@@ -12,6 +12,7 @@ class Navio
 
     public:
         Navio(std::string nome, int tamanho);
+        virtual ~Navio() = default;
 
         std::string getNome() const;
         int getTamanho() const;
