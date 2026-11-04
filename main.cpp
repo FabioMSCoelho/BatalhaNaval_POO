@@ -9,57 +9,49 @@
 #include "tabuleiros/TabuleiroFrota.h"
 #include "tabuleiros/TabuleiroRadar.h"
 #include "jogadores/Jogador.h"
+#include "partida/Partida.h"
 #include <vector>
 
-int main()
-{   
-    PortaAvioes portaavioes;
-    Encouracado encouracado;
-    Cruzador cruzador;
-    Destroyer destroyer;
-    Submarino submarino;
 
-    Tabuleiro tabuleiro; 
-    TabuleiroFrota frota;
+int main() {
+    Jogador jogador1("Jogador 1");
+    Jogador jogador2("Jogador 2");
 
-    Coordenada inicio{3, 3};
+    bool navio1 = jogador1.adicionarNavio(
+        std::make_unique<Submarino>(),
+        {1, 1},
+        true
+    );
 
-    Jogador jogador1("fabio");
-    Jogador jogador2("Giovana");
+    bool navio2 = jogador2.adicionarNavio(
+        std::make_unique<Submarino>(),
+        {2, 3},
+        true
+    );
 
-    std::cout << jogador1.getNome() << std::endl;
-    std::cout << jogador2.getNome() << std::endl;
+    if (!navio1 || !navio2)
+    {
+        std::cout << "Erro ao posicionar navios!\n";
+        return 1;
+    }
 
+    Partida partida(jogador1, jogador2);
 
-    bool conseguiu = frota.posicionarNavio(cruzador, inicio, true);
+    // Jogador 1 erra
+    partida.executarTurno({5, 5});
 
-    std::cout << conseguiu << std::endl;
+    // Jogador 2 erra
+    partida.executarTurno({6, 6});
 
-    inicio = {3, 12};
+    // Jogador 1 repete um ataque
+    partida.executarTurno({5, 5});
 
-    conseguiu = frota.posicionarNavio(cruzador, inicio, true);
+    // Jogador 1 acerta e vence
+    partida.executarTurno({2, 3});
 
-    std::cout << conseguiu << std::endl;
-
-    frota.exibir();
-    
-    // std::vector<Navio*> frota;
-    
-    // frota.push_back(&portaavioes);
-    // frota.push_back(&encouracado);
-    // frota.push_back(&cruzador);
-    // frota.push_back(&destroyer);
-    // frota.push_back(&submarino);
-
-    // for (Navio* navio : frota)
-    // {
-    //     std::cout << navio->getNome()
-    //     << navio->getTamanho()
-    //     << navio->getSimbolo()
-    //     <<std::endl;
-    // }
-
-
+    // Tentativa de ataque depois da vitoria
+    partida.executarTurno({1, 1});
 
     return 0;
+
 }
