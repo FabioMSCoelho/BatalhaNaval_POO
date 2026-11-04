@@ -33,13 +33,13 @@ void Tabuleiro::exibir() const
     std::cout << "  ";
     for (int coluna = 0; coluna < TAMANHO; coluna++)
     {
-        std::cout << std::setw(3) << coluna + 1;
+        std::cout << std::setw(3) << coluna;
     }
     std::cout << std::endl;
 
     for (int i = 0; i < TAMANHO; i++)
     {
-        std::cout << std::setw(2) << i + 1;
+        std::cout << std::setw(2) << i;
         for (int j = 0; j < TAMANHO; j++)
         {
             if(celulas[i][j] == TipoCelula::Agua)
