@@ -2,15 +2,19 @@
 #define TABULEIROFROTA_H
 
 #include "Tabuleiro.h"
+#include "../navios/Navio.h"
 
 class TabuleiroFrota : public Tabuleiro
 {
+private:
+    Navio* navios[TAMANHO][TAMANHO];
+
 public:
     TabuleiroFrota();
 
     bool posicionarNavio(
+        Navio& navio,
         const Coordenada& inicio,
-        int tamanho,
         bool horizontal
     );
 

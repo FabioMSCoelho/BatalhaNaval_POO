@@ -31,13 +31,13 @@ int main()
     std::cout << jogador2.getNome() << std::endl;
 
 
-    bool conseguiu = frota.posicionarNavio(inicio, 3, true);
+    bool conseguiu = frota.posicionarNavio(cruzador, inicio, true);
 
     std::cout << conseguiu << std::endl;
 
     inicio = {3, 12};
 
-    conseguiu = frota.posicionarNavio(inicio, 3, true);
+    conseguiu = frota.posicionarNavio(cruzador, inicio, true);
 
     std::cout << conseguiu << std::endl;
 

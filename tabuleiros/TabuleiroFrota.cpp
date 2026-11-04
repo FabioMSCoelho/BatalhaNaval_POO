@@ -2,14 +2,23 @@
 
 TabuleiroFrota::TabuleiroFrota()
 {
+    for (size_t i = 0; i < TAMANHO; i++)
+    {
+        for (size_t j = 0; j < TAMANHO; j++)
+        {
+            navios[i][j] = nullptr;
+        }
+    }
+
 }
 
 bool TabuleiroFrota::posicionarNavio(
+    Navio& navio,
     const Coordenada& inicio,
-    int tamanho,
     bool horizontal
-)
-{
+    ){
+
+    int tamanho = navio.getTamanho();
     // verifica se a coordenada inicial é válida
     if (!coordenadaValida(inicio))
     {
@@ -60,7 +69,8 @@ bool TabuleiroFrota::posicionarNavio(
             ? inicio.coluna + i
             : inicio.coluna;
 
-        celulas[linhaAtual][colunaAtual] = TipoCelula::Navio;
+            celulas[linhaAtual][colunaAtual] = TipoCelula::Navio;
+            navios[linhaAtual][colunaAtual] = &navio;
     }
 
     return true;
@@ -70,9 +80,20 @@ bool TabuleiroFrota::receberAtaque(const Coordenada& coordenada){
     if(!coordenadaValida(coordenada)){
         return false;
     }
-    if(getCelula(coordenada) == TipoCelula::Navio){
+
+    TipoCelula estadoAtual = getCelula(coordenada);
+
+    if(estadoAtual == TipoCelula::Navio){
+        Navio* navioAtingido = navios[coordenada.linha][coordenada.coluna];
+        navioAtingido->registrarAcerto();
         celulas[coordenada.linha][coordenada.coluna] = TipoCelula::Acerto;
         return true;
+    }
+    else if(
+        estadoAtual == TipoCelula::Acerto ||
+        estadoAtual == TipoCelula::Erro
+    ) {
+        return false;
     }
     celulas[coordenada.linha][coordenada.coluna] = TipoCelula::Erro;
         return false;
