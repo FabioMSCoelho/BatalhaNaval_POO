@@ -3,6 +3,16 @@
 
 #include "../jogadores/Jogador.h"
 
+enum class ResultadoTurno
+{
+    Acerto,
+    Erro,
+    CoordenadaInvalida,
+    AtaqueRepetido,
+    Vitoria,
+    PartidaEncerrada
+};
+
 class Partida{
 private:
     Jogador& jogador1;
@@ -14,8 +24,9 @@ private:
 public:
     Partida(Jogador& jogador1, Jogador& jogador2);
 
-    void executarTurno(const Coordenada& coordenada);
-    bool estaencerrada() const;
+    ResultadoTurno executarTurno(const Coordenada& coordenada);
+    bool estaEncerrada() const;
+    int getTurnoAtual() const;
 };
 
 #endif

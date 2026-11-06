@@ -1,18 +1,20 @@
 #include "Partida.h"
-#include <iostream>
 
 Partida::Partida(Jogador& jogador1, Jogador& jogador2)
 : jogador1(jogador1), jogador2(jogador2), turnoAtual(1), encerrada(false){}
 
-bool Partida::estaencerrada() const{
+int Partida::getTurnoAtual() const{
+    return turnoAtual;
+}
+
+bool Partida::estaEncerrada() const{
     return encerrada;
 }
 
-void Partida::executarTurno(const Coordenada& coordenada){
+ResultadoTurno Partida::executarTurno(const Coordenada& coordenada){
     if(encerrada)
     {
-        std::cout << "partida encerrada!\n";
-        return;
+        return ResultadoTurno::PartidaEncerrada;
     }
 
     Jogador& atacante = (turnoAtual == 1)
@@ -24,33 +26,24 @@ void Partida::executarTurno(const Coordenada& coordenada){
         : jogador1;
 
     if(!atacante.getRadar().coordenadaValida(coordenada)){
-        std::cout << "coordenada invalida!\n";
-        return;
+        return ResultadoTurno::CoordenadaInvalida;
     }
 
     if(atacante.getRadar().jaFoiAtacada(coordenada)){
-        std::cout << "coordenada já atacada!\n";
-        return;
+        return ResultadoTurno::AtaqueRepetido;
     }
 
     bool acertou = atacante.atacar(defensor, coordenada);
 
-    std::cout << "Jogador " << turnoAtual
-              << " atacou (" << coordenada.linha
-              << ", " << coordenada.coluna << "): "
-              << (acertou ? "Acerto" : "Erro")
-              << std::endl;
-
     if(defensor.todosNaviosAfundados()){
         encerrada = true;
-
-        std::cout << "Jogador "
-                  << turnoAtual
-                  << " venceu!\n";
-
-        return;
+        return ResultadoTurno::Vitoria;
     }
 
     turnoAtual = (turnoAtual == 1) ? 2 : 1;
+
+    return acertou
+        ? ResultadoTurno::Acerto
+        : ResultadoTurno::Erro;
 
 }
