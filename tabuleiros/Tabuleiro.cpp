@@ -1,6 +1,7 @@
 #include "Tabuleiro.h"
 #include <iostream>
 #include <iomanip>
+#include "../util/Cores.h"
 
 Tabuleiro::Tabuleiro()
 {
@@ -42,21 +43,36 @@ void Tabuleiro::exibir() const
         std::cout << std::setw(2) << i;
         for (int j = 0; j < TAMANHO; j++)
         {
-            if(celulas[i][j] == TipoCelula::Agua)
+            char simbolo = '~';
+            const char* cor = Cores::Azul;
+
+            switch (celulas[i][j])
             {
-                std::cout << std::setw(3) << "~";
+                case TipoCelula::Agua:
+                    simbolo = '~';
+                    cor = Cores::Azul;
+                    break;
+
+                case TipoCelula::Navio:
+                    simbolo = 'N';
+                    cor = Cores::Ciano;
+                    break;
+
+                case TipoCelula::Acerto:
+                    simbolo = 'X';
+                    cor = Cores::Vermelho;
+                    break;
+
+                case TipoCelula::Erro:
+                    simbolo = '*';
+                    cor = Cores::Amarelo;
+                    break;
             }
-            else if (celulas[i][j] == TipoCelula::Navio){
-                std::cout << std::setw(3) << "N";
-            }
-            else if(celulas[i][j] == TipoCelula::Acerto)
-            {
-                std::cout << std::setw(3) << "X";
-            }
-            else if (celulas[i][j] == TipoCelula::Erro){
-                std::cout << std::setw(3) << "*";
-            }
-        } 
+
+            std::cout << cor
+                      << std::setw(3) << simbolo
+                      << Cores::Reset;
+        }
         std::cout << std::endl;       
     }    
 }
