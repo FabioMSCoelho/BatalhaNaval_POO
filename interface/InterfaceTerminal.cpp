@@ -177,10 +177,10 @@ void InterfaceTerminal::iniciar(){
         if(!lerInteiro("\nColuna do ataque: ", coluna))
         return;
 
-        ResultadoTurno resultado =
+        ResultadoTurnoDetalhado resultado =
             partida.executarTurno({linha, coluna});
 
-        switch (resultado)
+        switch (resultado.tipo)
         {
             case ResultadoTurno::Acerto:
                 std::cout << "Jogador " << turno
@@ -210,7 +210,7 @@ void InterfaceTerminal::iniciar(){
                 break;
         }
 
-        if(!partida.estaEncerrada() && (resultado == ResultadoTurno::Acerto ||resultado == ResultadoTurno::Erro))
+        if(!partida.estaEncerrada() && resultado.tipo == ResultadoTurno::Erro)
         {
             if(!trocarJogador(partida.getTurnoAtual()))
             return;

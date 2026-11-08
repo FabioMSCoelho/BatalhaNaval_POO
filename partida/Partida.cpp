@@ -11,10 +11,10 @@ bool Partida::estaEncerrada() const{
     return encerrada;
 }
 
-ResultadoTurno Partida::executarTurno(const Coordenada& coordenada){
+ResultadoTurnoDetalhado Partida::executarTurno(const Coordenada& coordenada){
     if(encerrada)
     {
-        return ResultadoTurno::PartidaEncerrada;
+        return {ResultadoTurno::PartidaEncerrada, ""};
     }
 
     Jogador& atacante = (turnoAtual == 1)
@@ -26,24 +26,35 @@ ResultadoTurno Partida::executarTurno(const Coordenada& coordenada){
         : jogador1;
 
     if(!atacante.getRadar().coordenadaValida(coordenada)){
-        return ResultadoTurno::CoordenadaInvalida;
+        return {ResultadoTurno::CoordenadaInvalida, ""};
     }
 
     if(atacante.getRadar().jaFoiAtacada(coordenada)){
-        return ResultadoTurno::AtaqueRepetido;
+        return {ResultadoTurno::AtaqueRepetido, ""};
     }
 
     bool acertou = atacante.atacar(defensor, coordenada);
 
+    std::string nomeNavioAfundado = "";
+
+    if(acertou){
+        const Navio* navio = defensor.getFrota().getNavioNaPosicao(coordenada);
+        if(navio != nullptr && navio->estaAfundado()){
+            nomeNavioAfundado = navio->getNome();
+        }
+    }
+
     if(defensor.todosNaviosAfundados()){
         encerrada = true;
-        return ResultadoTurno::Vitoria;
+        return {ResultadoTurno::Vitoria, ""};
+    }
+
+    if(acertou){
+        return {ResultadoTurno::Acerto, nomeNavioAfundado};
     }
 
     turnoAtual = (turnoAtual == 1) ? 2 : 1;
 
-    return acertou
-        ? ResultadoTurno::Acerto
-        : ResultadoTurno::Erro;
+    return {ResultadoTurno::Erro, ""};
 
 }

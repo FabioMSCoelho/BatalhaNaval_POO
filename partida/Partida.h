@@ -2,6 +2,7 @@
 #define PARTIDA_H
 
 #include "../jogadores/Jogador.h"
+#include <string>
 
 enum class ResultadoTurno
 {
@@ -11,6 +12,11 @@ enum class ResultadoTurno
     AtaqueRepetido,
     Vitoria,
     PartidaEncerrada
+};
+
+struct ResultadoTurnoDetalhado{
+    ResultadoTurno tipo;
+    std::string nomeNavioAfundado;
 };
 
 class Partida{
@@ -24,7 +30,7 @@ private:
 public:
     Partida(Jogador& jogador1, Jogador& jogador2);
 
-    ResultadoTurno executarTurno(const Coordenada& coordenada);
+    ResultadoTurnoDetalhado executarTurno(const Coordenada& coordenada);
     bool estaEncerrada() const;
     int getTurnoAtual() const;
 };
