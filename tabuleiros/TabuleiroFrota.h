@@ -19,6 +19,10 @@ public:
     );
 
     bool receberAtaque(const Coordenada& coordenada);
+
+    const Navio* getNavioNaPosicao(
+        const Coordenada& coordenada
+    ) const;
 };
 
 #endif

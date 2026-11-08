@@ -98,3 +98,10 @@ bool TabuleiroFrota::receberAtaque(const Coordenada& coordenada){
     celulas[coordenada.linha][coordenada.coluna] = TipoCelula::Erro;
         return false;
 }
+
+const Navio* TabuleiroFrota::getNavioNaPosicao(const Coordenada& coordernada) const{
+    if (!coordenadaValida(coordernada)){
+        return nullptr;
+    }
+    return navios[coordernada.linha][coordernada.coluna];
+}
