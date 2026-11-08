@@ -7,12 +7,16 @@
 #include "../jogadores/Jogador.h"
 #include "../partida/Partida.h"
 #include "../navios/Navio.h"
+#include "../configuracao/ConfiguracaoFrota.h"
 
 class InterfaceTerminal{
 private:
     Jogador& jogador1;
     Jogador& jogador2;
     Partida& partida;
+    ConfiguracaoFrota configuracao;
+
+    static void limparTela();
 
     bool trocarJogador(int proximoJogador);
 
@@ -21,12 +25,11 @@ private:
         int& valor
     );
 
-    static std::unique_ptr<Navio> criarNavio(int tipo);
-
     bool posicionarFrota(
         Jogador& jogador,
         int numeroJogador
     );
+
 
 public:
     InterfaceTerminal(

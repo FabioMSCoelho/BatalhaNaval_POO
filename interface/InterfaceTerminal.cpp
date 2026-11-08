@@ -1,15 +1,25 @@
 #include "InterfaceTerminal.h"
+#include "../util/Cores.h"
 
 #include <iostream>
 #include <limits>
 #include <utility>
+#include <thread>
+#include <chrono>
 
 #include "../navios/Cruzador.h"
 #include "../navios/Destroyer.h"
 #include "../navios/Submarino.h"
+#include "../navios/Encouracado.h"
+#include "../navios/PortaAvioes.h"
 
 InterfaceTerminal::InterfaceTerminal(Jogador& jogador1, Jogador& jogador2, Partida& partida)
 :jogador1(jogador1), jogador2(jogador2), partida(partida){}
+
+void InterfaceTerminal::limparTela()
+{
+    std::cout << "\033[2J\033[H" << std::flush;
+}
 
 bool InterfaceTerminal::trocarJogador(int proximoJogador)
 {
@@ -64,31 +74,22 @@ bool InterfaceTerminal::lerInteiro(const std::string& mensagem, int& valor)
     }
 }
 
-std::unique_ptr<Navio> InterfaceTerminal::criarNavio(int tipo)
-{
-    switch (tipo)
-    {
-        case 1:
-            return std::make_unique<Cruzador>();
-
-        case 2:
-            return std::make_unique<Destroyer>();
-
-        case 3:
-            return std::make_unique<Submarino>();
-
-        default:
-            return nullptr;
-    }
-}
-
 bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
-    std::cout << "\n ===== POSICIONAMENTO DO JOGADOR " << numeroJogador << " =====\n";
 
-    for(int tipo = 1; tipo <= 3; tipo ++){
+    for(TipoNavio tipo : configuracao.getTipos()){
         while(true)
         {
-            auto navio = criarNavio(tipo);
+            limparTela();
+
+            std::cout << "\n ===== POSICIONAMENTO DO JOGADOR " << numeroJogador << " =====\n";
+
+            auto navio = configuracao.criarNavio(tipo);
+
+            if (!navio)
+            {
+                std::cout << "Erro ao criar navio!\n";
+                return false;
+            }
 
             std::cout << "\nPosicionando: "
             << navio -> getNome()
@@ -96,9 +97,11 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
             << navio->getTamanho()
             << ")\n";
 
+            std::cout << "\n";
             jogador.getFrota().exibir();
+            std::cout << "\n";
 
-            int linha, coluna, orientacao;
+            int linha, coluna, orientacao = 1;
 
             if (!lerInteiro("Linha inicial: ", linha))
                 return false;
@@ -106,16 +109,19 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
             if (!lerInteiro("Coluna inicial: ", coluna))
                 return false;
 
-            std::cout << "Orientacao:\n";
-            std::cout << "1 - Horizontal\n";
-            std::cout << "2 - Vertical\n";
+            if(navio->getTamanho() > 1){
+                std::cout << "\nOrientacao:\n";
+                std::cout << "1 - Horizontal\n";
+                std::cout << "2 - Vertical\n\n";
 
-            if(!lerInteiro("Escolha: ", orientacao))
-                return false;
+                if(!lerInteiro("Escolha: ", orientacao))
+                    return false;
 
-            if(orientacao != 1 && orientacao != 2){
-                std::cout << "Orientacao invalida! \n";
-                continue;
+                if(orientacao != 1 && orientacao != 2){
+                    std::cout << "Orientacao invalida! \n";
+                    std::this_thread::sleep_for(std::chrono::seconds(3));
+                    continue;
+                }
             }
 
             bool horizontal = (orientacao == 1);
@@ -126,16 +132,31 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
                 horizontal
             );
 
-            if(posicionou)
+            if (posicionou)
             {
-                std::cout << "Navio posicionado!\n";
+                std::cout << "\nNavio posicionado!\n";
+
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+
                 break;
             }
 
             std::cout << "Posicionamento invalido! "
             << "Tente novamente. \n";
+            std::this_thread::sleep_for(std::chrono::seconds(3));
         }
     }
+    limparTela();
+
+        std::cout << "\nFrota completa!\n\n";
+
+        jogador.getFrota().exibir();
+
+        std::cout << "\nPressione ENTER para continuar...";
+
+        std::string entrada;
+        if (!std::getline(std::cin, entrada))
+            return false;
 
     return true;
 }
@@ -145,14 +166,8 @@ void InterfaceTerminal::iniciar(){
     if(!posicionarFrota(jogador1, 1))
         return;
 
-    if (!trocarJogador(2))
-    return;
-
     if(!posicionarFrota(jogador2, 2))
         return;
-
-    if (!trocarJogador(1))
-    return;
 
     while(!partida.estaEncerrada()){
         int turno = partida.getTurnoAtual();
@@ -183,14 +198,18 @@ void InterfaceTerminal::iniciar(){
         switch (resultado.tipo)
         {
             case ResultadoTurno::Acerto:
-                std::cout << "Jogador " << turno
-                        << " acertou!\n";
-                break;
+            std::cout << Cores::Vermelho
+                << "Jogador " << turno
+                << " acertou!"
+                << Cores::Reset << '\n';
+            break;
 
             case ResultadoTurno::Erro:
-                std::cout << "Jogador " << turno
-                        << " errou!\n";
-                break;
+            std::cout << Cores::Amarelo
+                << "Jogador " << turno
+                << " errou!"
+                << Cores::Reset << '\n';
+            break;
 
             case ResultadoTurno::CoordenadaInvalida:
                 std::cout << "Coordenada invalida!\n";
@@ -201,13 +220,29 @@ void InterfaceTerminal::iniciar(){
                 break;
 
             case ResultadoTurno::Vitoria:
-                std::cout << "Jogador " << turno
-                        << " acertou e venceu!\n";
-                break;
+            std::cout << Cores::Verde
+                << "Jogador " << turno
+                << " acertou e venceu!"
+                << Cores::Amarelo << '\n';
+            break;
 
             case ResultadoTurno::PartidaEncerrada:
                 std::cout << "Partida ja encerrada!\n";
                 break;
+        }
+
+        if (!resultado.nomeNavioAfundado.empty())
+        {
+            std::cout << Cores::Vermelho
+                    << Cores::Negrito
+                    << "NAVIO AFUNDADO: "
+                    << resultado.nomeNavioAfundado
+                    << Cores::Reset
+                    << '\n';
+        }
+
+        if(resultado.tipo == ResultadoTurno::Acerto){
+            std::this_thread::sleep_for(std::chrono::seconds(3));
         }
 
         if(!partida.estaEncerrada() && resultado.tipo == ResultadoTurno::Erro)
