@@ -18,6 +18,10 @@ private:
 
     static void limparTela();
 
+    static void mostrarErroTemporario(
+        const std::string& mensagem
+    );
+
     bool trocarJogador(int proximoJogador);
 
     static bool lerInteiro(

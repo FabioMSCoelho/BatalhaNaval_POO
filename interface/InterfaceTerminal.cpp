@@ -21,6 +21,28 @@ void InterfaceTerminal::limparTela()
     std::cout << "\033[2J\033[H" << std::flush;
 }
 
+void InterfaceTerminal::mostrarErroTemporario(
+    const std::string& mensagem
+)
+{
+    // Volta para a linha anterior e apaga seu conteudo
+    std::cout << "\033[1A\r\033[2K";
+
+    // Mostra a mensagem em vermelho
+    std::cout << Cores::Vermelho
+              << mensagem
+              << Cores::Reset
+              << std::flush;
+
+    // Aguarda para permitir a leitura
+    std::this_thread::sleep_for(
+        std::chrono::seconds(2)
+    );
+
+    // Apaga somente a mensagem de erro
+    std::cout << "\r\033[2K" << std::flush;
+}
+
 bool InterfaceTerminal::trocarJogador(int proximoJogador)
 {
     std::string entrada;
@@ -70,7 +92,8 @@ bool InterfaceTerminal::lerInteiro(const std::string& mensagem, int& valor)
         std::cin.ignore(
             std::numeric_limits<std::streamsize>::max(), '\n'
         );
-        std::cout << "Digite um numero inteiro! \n";
+
+        mostrarErroTemporario("Digite um numero inteiro!");
     }
 }
 
