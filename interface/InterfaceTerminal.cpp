@@ -18,7 +18,7 @@ InterfaceTerminal::InterfaceTerminal(Jogador& jogador1, Jogador& jogador2, Parti
 
 void InterfaceTerminal::limparTela()
 {
-    std::cout << "\033[2J\033[H" << std::flush;
+    std::cout << "\033[2J\033[3J\033[H" << std::flush;
 }
 
 void InterfaceTerminal::mostrarErroTemporario(
@@ -43,18 +43,14 @@ void InterfaceTerminal::mostrarErroTemporario(
     std::cout << "\r\033[2K" << std::flush;
 }
 
+
 bool InterfaceTerminal::trocarJogador(int proximoJogador)
 {
     std::string entrada;
 
-    std::cout << "\nPressione ENTER para encerrar "
-              << "sua visualizacao...";
+    // std::this_thread::sleep_for(std::chrono::seconds(3));
 
-    if (!std::getline(std::cin, entrada))
-        return false;
-
-    // Limpa a tela do terminal
-    std::cout << "\033[2J\033[H" << std::flush;
+    limparTela();
 
     std::cout << "\nPasse o computador para o Jogador "
               << proximoJogador << ".\n";
@@ -65,7 +61,7 @@ bool InterfaceTerminal::trocarJogador(int proximoJogador)
         return false;
 
     // Limpa novamente antes de mostrar os tabuleiros
-    std::cout << "\033[2J\033[H" << std::flush;
+    limparTela();
 
     return true;
 }
@@ -233,10 +229,15 @@ void InterfaceTerminal::iniciar(){
     if(!posicionarFrota(jogador1, 1))
         return;
 
+    limparTela();
+
     if(!posicionarFrota(jogador2, 2))
         return;
 
     while(!partida.estaEncerrada()){
+
+        limparTela();
+
         int turno = partida.getTurnoAtual();
 
         Jogador& jogadorAtual = (turno == 1)
@@ -245,11 +246,12 @@ void InterfaceTerminal::iniciar(){
 
         std::cout << "\n===== TURNO DO JOGADOR " << turno << "=====\n";
 
-        std::cout << "\nSua frota:\n";
+        std::cout << "\nSua frota:\n\n";
         jogadorAtual.getFrota().exibir();
 
-        std::cout << "\nseu radar:\n";
+        std::cout << "\nseu radar:\n\n";
         jogadorAtual.getRadar().exibir();
+        std::cout << "\n";
 
         Coordenada tiro{};
 
@@ -293,7 +295,7 @@ void InterfaceTerminal::iniciar(){
             std::cout << Cores::Verde
                 << "Jogador " << turno
                 << " acertou e venceu!"
-                << Cores::Amarelo << '\n';
+                << Cores::Reset << '\n';
             break;
 
             case ResultadoTurno::PartidaEncerrada:
@@ -311,9 +313,7 @@ void InterfaceTerminal::iniciar(){
                     << '\n';
         }
 
-        if(resultado.tipo == ResultadoTurno::Acerto){
-            std::this_thread::sleep_for(std::chrono::seconds(3));
-        }
+        std::this_thread::sleep_for(std::chrono::seconds(3));
 
         if(!partida.estaEncerrada() && resultado.tipo == ResultadoTurno::Erro)
         {
