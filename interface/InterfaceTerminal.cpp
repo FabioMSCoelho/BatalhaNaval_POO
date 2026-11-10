@@ -97,14 +97,45 @@ bool InterfaceTerminal::lerInteiro(const std::string& mensagem, int& valor)
     }
 }
 
+bool InterfaceTerminal::lerCoordenada(
+    const Tabuleiro& tabuleiro,
+    Coordenada& coordenada,
+    const std::string& contexto
+){
+    int linha,coluna;
+
+    while(true){
+        if (!lerInteiro("Linha " + contexto + ": ", linha))
+            return false;
+
+        if(tabuleiro.coordenadaValida({linha,0})){
+            break;
+        }
+
+        mostrarErroTemporario("Linha invalida! Tente novamente.");
+    }
+
+    while(true){
+        if (!lerInteiro("Coluna " + contexto + ": ", coluna))
+            return false;
+
+        if(tabuleiro.coordenadaValida({linha,coluna})){
+            break;
+        }
+
+        mostrarErroTemporario("Coluna invalida! Tente novamente.");
+    }
+
+    // Armazena os valores validados
+    coordenada = {linha, coluna};
+
+    return true;
+}
+
 bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
-
     for(TipoNavio tipo : configuracao.getTipos()){
-        while(true)
-        {
-            limparTela();
 
-            std::cout << "\n ===== POSICIONAMENTO DO JOGADOR " << numeroJogador << " =====\n";
+        while(true){
 
             auto navio = configuracao.criarNavio(tipo);
 
@@ -114,6 +145,9 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
                 return false;
             }
 
+            limparTela();
+
+            std::cout << "\n ===== POSICIONAMENTO DO JOGADOR " << numeroJogador << " =====\n";
             std::cout << "\nPosicionando: "
             << navio -> getNome()
             << " (tamanho: "
@@ -124,26 +158,35 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
             jogador.getFrota().exibir();
             std::cout << "\n";
 
-            int linha, coluna, orientacao = 1;
+            Coordenada inicio{};
 
-            if (!lerInteiro("Linha inicial: ", linha))
+            if (!lerCoordenada(
+                jogador.getFrota(),
+                inicio,
+                "inicial"
+            ))
+            {
                 return false;
+            }
 
-            if (!lerInteiro("Coluna inicial: ", coluna))
-                return false;
+            int orientacao = 1;
 
             if(navio->getTamanho() > 1){
                 std::cout << "\nOrientacao:\n";
                 std::cout << "1 - Horizontal\n";
                 std::cout << "2 - Vertical\n\n";
 
-                if(!lerInteiro("Escolha: ", orientacao))
-                    return false;
+                while(true){
+                    if(!lerInteiro("Escolha: ", orientacao))
+                        return false;
 
-                if(orientacao != 1 && orientacao != 2){
-                    std::cout << "Orientacao invalida! \n";
-                    std::this_thread::sleep_for(std::chrono::seconds(3));
-                    continue;
+                    if(orientacao != 1 && orientacao != 2){
+                        mostrarErroTemporario(
+                        "Orientacao invalida!");
+
+                        continue;
+                    }
+                    break;
                 }
             }
 
@@ -151,7 +194,7 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
 
             bool posicionou = jogador.adicionarNavio(
                 std::move(navio),
-                {linha, coluna},
+                inicio,
                 horizontal
             );
 
@@ -166,10 +209,11 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
 
             std::cout << "Posicionamento invalido! "
             << "Tente novamente. \n";
+
             std::this_thread::sleep_for(std::chrono::seconds(3));
         }
     }
-    limparTela();
+        limparTela();
 
         std::cout << "\nFrota completa!\n\n";
 
@@ -207,16 +251,19 @@ void InterfaceTerminal::iniciar(){
         std::cout << "\nseu radar:\n";
         jogadorAtual.getRadar().exibir();
 
-        int linha, coluna;
+        Coordenada tiro{};
 
-        if(!lerInteiro("\nLinha do ataque: ", linha))
-        return;
-
-        if(!lerInteiro("\nColuna do ataque: ", coluna))
-        return;
+        if (!lerCoordenada(
+            jogadorAtual.getRadar(),
+            tiro,
+            "do ataque"
+        ))
+        {
+            return;
+        }
 
         ResultadoTurnoDetalhado resultado =
-            partida.executarTurno({linha, coluna});
+            partida.executarTurno(tiro);
 
         switch (resultado.tipo)
         {

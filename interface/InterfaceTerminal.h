@@ -8,6 +8,8 @@
 #include "../partida/Partida.h"
 #include "../navios/Navio.h"
 #include "../configuracao/ConfiguracaoFrota.h"
+#include "../tabuleiros/Tabuleiro.h"
+#include "../util/Coordenada.h"
 
 class InterfaceTerminal{
 private:
@@ -27,6 +29,12 @@ private:
     static bool lerInteiro(
         const std::string& mensagem,
         int& valor
+    );
+
+    bool lerCoordenada(
+        const Tabuleiro& tabuleiro,
+        Coordenada& coordenada,
+        const std::string& contexto
     );
 
     bool posicionarFrota(
