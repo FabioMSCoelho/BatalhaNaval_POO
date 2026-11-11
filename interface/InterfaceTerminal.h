@@ -47,6 +47,14 @@ private:
         int numeroJogador
     );
 
+    void exibirLogoMenu();
+
+    void exibirNavioMenu();
+
+    bool exibirMenuInicial();
+
+    void exibirInstrucoes();
+
     void exibirTelaTurno(Jogador& jogador, int turno);
 
 public:

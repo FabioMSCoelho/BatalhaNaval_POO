@@ -263,6 +263,9 @@ void InterfaceTerminal::exibirTelaTurno(Jogador& jogador, int turno){
 
 void InterfaceTerminal::iniciar(){
 
+    if(!exibirMenuInicial())
+        return;
+
     if(!posicionarFrota(jogador1, 1))
         return;
 
@@ -348,4 +351,159 @@ void InterfaceTerminal::iniciar(){
             return;
         }
     }
+}
+
+    void InterfaceTerminal::exibirLogoMenu(){
+        struct LinhaLogo{
+            const char* ciano;
+            const char* vermelho;
+        };
+
+        const LinhaLogo logo[] = {
+        {R"(      __________         __    __  .__         )", R"(  _________.__    .__        )"},
+        {R"(      \______   \_____ _/  |__/  |_|  |   ____ )", R"( /   _____/|  |__ |__|_____  )"},
+        {R"(       |    |  _/\__  \\   __\   __\  | _/ __ \)", R"( \_____  \ |  |  \|  \  __ \ )"},
+        {R"(       |    |   \ / __ \|  |  |  | |  |_\  ___/)", R"( /        \|   Y  \  |  |_| >)"},
+        {R"(       |______  /(____  /__|  |__| |____/\___ \)", R"(/_______  /|___|  /__|   __/)"},
+        {R"(              \/      \/                     \/)", R"(        \/      \/   |__|   )"}
+    };
+
+        for (const auto& linha : logo){
+            std::cout << Cores::Ciano
+                  << linha.ciano
+                  << Cores::Vermelho
+                  << linha.vermelho
+                  << Cores::Reset
+                  << '\n';
+        }
+    }
+
+    void InterfaceTerminal::exibirNavioMenu(){
+        const char* navio[] = {
+            R"(                                       |__)",
+            R"(     [1] Comecar novo jogo             |\/)",
+            R"(     [2] Instrucoes                    ---)",
+            R"(     [3] Configuracoes                 / | [)",
+            R"(     [4] Sair                   !      | |||)",
+            R"(                              _/|     _/|-++')",
+            R"(                          +  +--|    |--|--|_ |-)",
+            R"(                       { /|__|  |/\__|  |--- |||__/)",
+            R"(                      +---------------___[}-_===_.'____                 /\)",
+            R"(                  ____`-' ||___-{]_| _[}-  |     |_[___\==--            \/   _)",
+            R"(    __..._____--==/___]_|__|_____________________________[___\==--____,------' .7)",
+            R"(   |                                                                     BB-61/)",
+            R"(    \_________________________________________________________________________|)",
+            R"(   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~)"
+        };
+
+        for (const char* linha : navio)
+        {
+            std::cout << linha << '\n';
+        }
+    }
+
+        bool InterfaceTerminal::exibirMenuInicial()
+    {
+        while (true)
+        {
+            limparTela();
+
+            std::cout << '\n';
+
+            exibirLogoMenu();
+
+            std::cout << "\n\n\n";
+
+            exibirNavioMenu();
+
+            std::cout << "\n";
+
+            int opcao{};
+
+            if (!lerInteiro("   Escolha uma opcao: ", opcao))
+            return false;
+
+            switch (opcao)
+            {
+                case 1:
+                return true;
+
+                case 2:
+                exibirInstrucoes();
+                break;
+
+                case 3:
+                {
+                    limparTela();
+
+                    exibirTituloCentralizado(
+                    "CONFIGURACOES", true
+                    );
+
+                    std::cout
+                    << "\nA configuracao de quantidades "
+                    << "sera integrada a ConfiguracaoFrota.\n\n"
+                    << "Pressione ENTER para voltar...";
+
+                    std::string entrada;
+
+                    if (!std::getline(std::cin, entrada))
+                    return false;
+
+                    break;
+                }
+
+                case 4:
+                    limparTela();
+                    std::cout << "Saindo do jogo...\n";
+                    return false;
+
+                    default:
+                    mostrarErroTemporario(
+                    "Opcao invalida! Tente novamente."
+                    );
+                    break;
+            }
+        }
+    }
+
+
+void InterfaceTerminal::exibirInstrucoes()
+{
+    limparTela();
+
+
+    exibirTituloCentralizado("               INSTRUCOES", true);
+
+    std::cout << "\n";
+    std::cout << "O objetivo do jogo e destruir todos os navios "
+    << "do seu oponente.\n\n";
+
+    std::cout << "No inicio da partida, o campo inimigo estara "
+    << "totalmente oculto.\n";
+    std::cout << "Voce nao sabera onde os navios do adversario "
+    << "estao posicionados.\n\n";
+
+    std::cout << "Para atacar, informe a LINHA e a COLUNA "
+    << "do local desejado.\n\n";
+
+    std::cout << "Se voce acertar um navio, a posicao sera "
+    << "marcada com ";
+    std::cout << Cores::Vermelho << "X"
+    << Cores::Reset
+    << " e voce podera jogar novamente.\n\n";
+
+    std::cout << "Se voce errar o ataque, a posicao sera "
+    << "marcada com ";
+    std::cout << Cores::Amarelo << "*"
+    << Cores::Reset
+    << " e a vez passara para o adversario.\n\n";
+
+    std::cout << "O jogo termina quando um jogador destruir "
+    << "todos os navios do oponente.\n\n";
+
+    std::cout << "Pressione ENTER para voltar ao menu...";
+
+    std::string entrada;
+    std::getline(std::cin, entrada);
 }
