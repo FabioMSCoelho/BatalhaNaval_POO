@@ -11,7 +11,7 @@ ConfiguracaoFrota::ConfiguracaoFrota()
         // TipoNavio::PortaAvioes,
         // TipoNavio::Encouracado,
         // TipoNavio::Cruzador,
-        TipoNavio::Destroyer,
+        // TipoNavio::Destroyer,
         TipoNavio::Submarino
     }
 {}
@@ -32,8 +32,8 @@ std::unique_ptr<Navio> ConfiguracaoFrota::criarNavio(TipoNavio tipo) const{
         // case TipoNavio::Cruzador:
         //     return std::make_unique<Cruzador>();
 
-        case TipoNavio::Destroyer:
-            return std::make_unique<Destroyer>();
+        // case TipoNavio::Destroyer:
+        //     return std::make_unique<Destroyer>();
 
         case TipoNavio::Submarino:
             return std::make_unique<Submarino>();
