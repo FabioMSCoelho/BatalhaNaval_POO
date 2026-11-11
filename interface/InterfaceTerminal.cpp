@@ -44,16 +44,13 @@ void InterfaceTerminal::mostrarErroTemporario(
 }
 
 
-bool InterfaceTerminal::trocarJogador(int proximoJogador)
+bool InterfaceTerminal::trocarJogador()
 {
     std::string entrada;
 
-    // std::this_thread::sleep_for(std::chrono::seconds(3));
-
     limparTela();
 
-    std::cout << "\nPasse o computador para o Jogador "
-              << proximoJogador << ".\n";
+    std::cout << "Passe o computador para o seu oponente\n";
 
     std::cout << "Pressione ENTER quando estiver pronto...";
 
@@ -215,10 +212,10 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
 
         jogador.getFrota().exibir();
 
-        std::cout << "\nPressione ENTER para continuar...";
+        std::cout << "\nEnviando embarcaçoes...\n";
+        std::this_thread::sleep_for(std::chrono::seconds(3));
 
-        std::string entrada;
-        if (!std::getline(std::cin, entrada))
+        if (!trocarJogador())
             return false;
 
     return true;
@@ -317,7 +314,7 @@ void InterfaceTerminal::iniciar(){
 
         if(!partida.estaEncerrada() && resultado.tipo == ResultadoTurno::Erro)
         {
-            if(!trocarJogador(partida.getTurnoAtual()))
+            if(!trocarJogador())
             return;
         }
     }

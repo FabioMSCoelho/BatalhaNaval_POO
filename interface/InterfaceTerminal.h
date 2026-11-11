@@ -24,7 +24,7 @@ private:
         const std::string& mensagem
     );
 
-    bool trocarJogador(int proximoJogador);
+    bool trocarJogador();
 
     static bool lerInteiro(
         const std::string& mensagem,
