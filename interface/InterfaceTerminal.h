@@ -18,6 +18,11 @@ private:
     Partida& partida;
     ConfiguracaoFrota configuracao;
 
+    static void exibirTituloCentralizado(
+        const std::string& titulo,
+        bool negrito = false
+    );
+
     static void limparTela();
 
     static void mostrarErroTemporario(
@@ -42,6 +47,7 @@ private:
         int numeroJogador
     );
 
+    void exibirTelaTurno(Jogador& jogador, int turno);
 
 public:
     InterfaceTerminal(

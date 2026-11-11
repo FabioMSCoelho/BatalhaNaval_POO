@@ -16,6 +16,28 @@
 InterfaceTerminal::InterfaceTerminal(Jogador& jogador1, Jogador& jogador2, Partida& partida)
 :jogador1(jogador1), jogador2(jogador2), partida(partida){}
 
+void InterfaceTerminal::exibirTituloCentralizado(
+    const std::string& titulo,
+    bool negrito )
+{
+    constexpr int larguraTabuleiro = 42;
+
+    int espacos = (
+        larguraTabuleiro - static_cast<int>(titulo.size())
+    ) / 2;
+
+    if (espacos < 0)
+        espacos = 0;
+
+    std::cout << std::string(espacos, ' ');
+
+    if (negrito)
+        std::cout << Cores::Negrito;
+
+    std::cout << titulo << Cores::Reset << "\n";
+}
+
+
 void InterfaceTerminal::limparTela()
 {
     std::cout << "\033[2J\033[3J\033[H" << std::flush;
@@ -127,9 +149,7 @@ bool InterfaceTerminal::lerCoordenada(
 
 bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
     for(TipoNavio tipo : configuracao.getTipos()){
-
         while(true){
-
             auto navio = configuracao.criarNavio(tipo);
 
             if (!navio)
@@ -140,12 +160,12 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
 
             limparTela();
 
-            std::cout << "\n ===== POSICIONAMENTO DO JOGADOR " << numeroJogador << " =====\n";
-            std::cout << "\nPosicionando: "
-            << navio -> getNome()
-            << " (tamanho: "
-            << navio->getTamanho()
-            << ")\n";
+            exibirTituloCentralizado( "POSICIONAMENTO DO JOGADOR "
+            + std::to_string(numeroJogador), true);
+
+            exibirTituloCentralizado(
+            "Posicionando: " + navio->getNome() +
+            " (tamanho: " + std::to_string(navio->getTamanho()) + ")");
 
             std::cout << "\n";
             jogador.getFrota().exibir();
@@ -186,17 +206,13 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
             bool horizontal = (orientacao == 1);
 
             bool posicionou = jogador.adicionarNavio(
-                std::move(navio),
-                inicio,
-                horizontal
+            std::move(navio),
+            inicio,
+            horizontal
             );
 
             if (posicionou)
             {
-                std::cout << "\nNavio posicionado!\n";
-
-                std::this_thread::sleep_for(std::chrono::seconds(2));
-
                 break;
             }
 
@@ -206,19 +222,43 @@ bool InterfaceTerminal::posicionarFrota(Jogador& jogador, int numeroJogador){
             std::this_thread::sleep_for(std::chrono::seconds(3));
         }
     }
-        limparTela();
 
-        std::cout << "\nFrota completa!\n\n";
+    limparTela();
 
-        jogador.getFrota().exibir();
+    exibirTituloCentralizado( "POSICIONAMENTO DO JOGADOR "
+                + std::to_string(numeroJogador), true);
+    std::cout << "\n\n";
 
-        std::cout << "\nEnviando embarcaçoes...\n";
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+    jogador.getFrota().exibir();
 
-        if (!trocarJogador())
-            return false;
+    std::cout << "\nEnviando embarcaçoes...\n";
+    std::this_thread::sleep_for(
+    std::chrono::seconds(3));
+
+    if (!trocarJogador())
+        return false;
 
     return true;
+}
+
+void InterfaceTerminal::exibirTelaTurno(Jogador& jogador, int turno){
+    limparTela();
+
+    exibirTituloCentralizado("TURNO DO JOGADOR " + std::to_string(turno),true);
+    std::cout << "\n";
+
+    exibirTituloCentralizado("Sua frota:");
+
+    std::cout << "\n";
+    jogador.getFrota().exibir();
+    std::cout << "\n";
+
+    exibirTituloCentralizado("Seu radar:");
+    std::cout << "\n";
+
+    jogador.getRadar().exibir();
+    std::cout << "\n";
+
 }
 
 void InterfaceTerminal::iniciar(){
@@ -226,29 +266,18 @@ void InterfaceTerminal::iniciar(){
     if(!posicionarFrota(jogador1, 1))
         return;
 
-    limparTela();
-
     if(!posicionarFrota(jogador2, 2))
         return;
 
     while(!partida.estaEncerrada()){
 
-        limparTela();
-
         int turno = partida.getTurnoAtual();
 
         Jogador& jogadorAtual = (turno == 1)
-            ? jogador1
-            : jogador2;
+        ? jogador1
+        : jogador2;
 
-        std::cout << "\n===== TURNO DO JOGADOR " << turno << "=====\n";
-
-        std::cout << "\nSua frota:\n\n";
-        jogadorAtual.getFrota().exibir();
-
-        std::cout << "\nseu radar:\n\n";
-        jogadorAtual.getRadar().exibir();
-        std::cout << "\n";
+        exibirTelaTurno(jogadorAtual, turno);
 
         Coordenada tiro{};
 
@@ -261,8 +290,9 @@ void InterfaceTerminal::iniciar(){
             return;
         }
 
-        ResultadoTurnoDetalhado resultado =
-            partida.executarTurno(tiro);
+        ResultadoTurnoDetalhado resultado = partida.executarTurno(tiro);
+
+        exibirTelaTurno(jogadorAtual, turno);
 
         switch (resultado.tipo)
         {
