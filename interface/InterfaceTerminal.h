@@ -57,6 +57,8 @@ private:
 
     void exibirTelaTurno(Jogador& jogador, int turno);
 
+    void exibirTelaVitoria(int numeroJogador);
+
 public:
     InterfaceTerminal(
         Jogador& jogador1,

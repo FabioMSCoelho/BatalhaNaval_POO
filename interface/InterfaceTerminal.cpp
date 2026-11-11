@@ -345,10 +345,19 @@ void InterfaceTerminal::iniciar(){
 
         std::this_thread::sleep_for(std::chrono::seconds(3));
 
-        if(!partida.estaEncerrada() && resultado.tipo == ResultadoTurno::Erro)
+        // Verifica se a partida terminou com uma vitoria
+        if (resultado.tipo == ResultadoTurno::Vitoria)
         {
-            if(!trocarJogador())
+            exibirTelaVitoria(turno);
             return;
+        }
+
+        // Troca de jogador somente apos um erro
+        if (!partida.estaEncerrada() &&
+            resultado.tipo == ResultadoTurno::Erro)
+        {
+            if (!trocarJogador())
+                return;
         }
     }
 }
@@ -503,6 +512,39 @@ void InterfaceTerminal::exibirInstrucoes()
     << "todos os navios do oponente.\n\n";
 
     std::cout << "Pressione ENTER para voltar ao menu...";
+
+    std::string entrada;
+    std::getline(std::cin, entrada);
+}
+
+void InterfaceTerminal::exibirTelaVitoria(int numeroJogador){
+
+    limparTela();
+
+    std::cout << "\n\n";
+
+    exibirTituloCentralizado(
+        "===== FIM DE JOGO =====", true
+    );
+
+    std::cout << "\n";
+
+    exibirTituloCentralizado(
+        "JOGADOR " + std::to_string(numeroJogador)
+        + " VENCEU!", true
+    );
+
+    std::cout << "\n\n";
+
+    exibirTituloCentralizado(
+        "Todas as embarcacoes inimigas foram afundadas!"
+    );
+
+    std::cout << "\n\n";
+
+    exibirTituloCentralizado(
+        "Pressione ENTER para encerrar..."
+    );
 
     std::string entrada;
     std::getline(std::cin, entrada);
